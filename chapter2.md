@@ -32,10 +32,28 @@ Si algún nombre de método es inválido en JavaScript, se utilizarán los corch
 
 Además, existe un método extra que se utiliza para recibir solicitudes mediante todos los métodos y responder, es el método all:
 ```javascript
-app.all('/secret', function (req, res, next) {
+app.all('/', function (req, res, next) {
   console.log('Accessing the secret section ...')
   next() // pass control to the next handler
 })
 ```
 
 ### Caminos de las rutas:
+Los caminos son las URLs a las que el cliente quiere acceder, es decir, el primer argumento de los métodos de routing.
+Ya hemos visto que `'/'` hace una solicitud a la raíz, pero se pueden añadir strings `'/capitulo1'`, también puedes usar expresiones regulares usando los caracteres '?', '+', '*', '()', '.' y '-'.
+Además, si se necesita usar un caracter especial como el '$' se puede meter entre corchetes y usar el escape de caracteres '[\$]'.
+
+Algunos ejemplos de caminos de rutas son:
+```javascript
+app.get('/about', function (req, res) {
+  res.send('about')
+})
+app.get('/random.text', function (req, res) {
+  res.send('random.text')
+})
+app.get('/ab*cd', function (req, res) {
+  res.send('ab*cd')
+})
+```
+
+### Parámetros de las rutas:
