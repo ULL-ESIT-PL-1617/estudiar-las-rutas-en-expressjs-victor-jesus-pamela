@@ -57,3 +57,58 @@ app.get('/ab*cd', function (req, res) {
 ```
 
 ### Parámetros de las rutas:
+Los parámetros son segmentos en la URL que se usan para grabar los valores pasados en esa posición de la URL, guardándolos en el objeto req.params, con el nombre del parámetro como llave del valor. Es decir, que si una URL tiene la forma de '/usuario/:userID' y se accede mediante '/usuario/1234' el valor '1234' quedará guardado en req.params con la clave userID.
+Ejemplo:
+```javascript
+app.get('/users/:userId/books/:bookId', function (req, res) {
+  res.send(req.params)
+})
+```
+También puedes utilizar el caracter '.' para indicar varios parámetros separados por '.' en la URL de la solicitud.
+```javascript
+app.get('/users/:userId.:userPass/books/:bookId', function (req, res) {
+  res.send(req.params)
+})
+```
+
+### Manejar rutas:
+Para manejar rutas se puede usar una sola función como hemos visto hasta ahora con `'app.get()'` o `'app.post()'`, o podemos usar un array de funciones que se ejecuten una detrás de otra para imponer condiciones antes de responder a la solicitud, por ejemplo.
+Un ejemplo de array de funciones sería:
+```javascript
+var cb0 = function (req, res, next) {
+  console.log('CB0')
+  next()
+}
+
+var cb1 = function (req, res, next) {
+  console.log('CB1')
+  next()
+}
+
+var cb2 = function (req, res) {
+  res.send('Hello from C!')
+}
+
+app.get('/example/c', [cb0, cb1, cb2])
+```
+También se pueden mezclar ambos manejos:
+```javascript
+var cb0 = function (req, res, next) {
+  console.log('CB0')
+  next()
+}
+
+var cb1 = function (req, res, next) {
+  console.log('CB1')
+  next()
+}
+
+app.get('/example/d', [cb0, cb1], function (req, res, next) {
+  console.log('the response will be sent by the next function ...')
+  next()
+}, function (req, res) {
+  res.send('Hello from D!')
+})
+```
+
+### Métodos de respuesta:
