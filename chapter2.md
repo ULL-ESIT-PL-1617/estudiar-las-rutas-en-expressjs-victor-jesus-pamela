@@ -126,4 +126,21 @@ res.sendFile()	Envía un archivo en forma de flujo octet.
 res.sendStatus()  Formatea el estado de la respuesta y lo envía en el cuerpo de la misma.
 ```
 
-### App .route()
+### App.route()
+La función `'app.route('ruta')'` te permite encadenar los manejos de ruta comentados con anterioridad.
+Ejemplo:
+```javascript
+app.route('/book')
+  .get(function (req, res) {
+    res.send('Get a random book')
+  })
+  .post(function (req, res) {
+    res.send('Add a book')
+  })
+  .put(function (req, res) {
+    res.send('Update the book')
+  })
+```
+Como podemos observar sólo es necesario especificar la ruta una vez, evitando así repeticiones y dentro de la función se especifica qué hacer para cada método de solicitud.
+
+### express.Router
