@@ -112,3 +112,18 @@ app.get('/example/d', [cb0, cb1], function (req, res, next) {
 ```
 
 ### Métodos de respuesta:
+Los métodos de respuesta se usan para responder al cliente y terminar el ciclo de solicitud-respuesta. Si no se usa ningún método de respuesta, la solicitud del cliente se quedará colgando.
+Los métodos de respuesta son:
+```javascript
+res.download()	Devuelve un archivo para ser descargado.
+res.end()	     Finaliza el proceso de respuesta.
+res.json()	    Devuelve una respuesta en forma de JSON.
+res.jsonp()	   Devuelve una respuesta JSON que soporta JSONP.
+res.redirect()	Redirecciona la solicitud.
+res.render()	  Renderiza una plantilla de página.
+res.send()	    Devuelve una respuesta que puede ser de varios tipos.
+res.sendFile()	Envía un archivo en forma de flujo octet.
+res.sendStatus()  Formatea el estado de la respuesta y lo envía en el cuerpo de la misma.
+```
+
+### App .route()
