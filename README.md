@@ -1,3 +1,4 @@
-# My Awesome Book
+# Rutas Expressjs
 
-This file file serves as your book's preface, a great place to describe your book's content and ideas.
+En este libro serán descritas algunos de los conceptos básicos para poder entender el routing en un servidor express mediante el uso de nodejs.
+
