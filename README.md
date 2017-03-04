@@ -1,27 +1,10 @@
-# Primeros Pasos NodeJS
+# Estudiar las rutas en Express.js
 
-# Installation
+Repositorio para la práctica de Procesadores de Lenguajes: Estudiar las Rutas en Express.js
 
-```shell
-cd ~/code
+Integrantes:
+* Pamela Jiménez Rebenaque
+* Víctor David Mayorca Luis
+* Jesús Eduardo Plasencia Pimentel
 
-git clone https://github.com/ULL-ESIT-PL-1617/primeros-pasos-en-nodejs-victor-jesus-pamela.git 
-
-cd primeros-pasos-en-nodejs-victor-jesus-pamela
-
-rm -fr .git
-
-vi package.json
-# edit repository.url and repository.wiki
-
-git remote add origin <url>
-
-npm run build
-# or
-# npm run generate-gitbook && npm run generate-wiki
-
-npm run deploy
-# or
-# npm run deploy-gitbook && npm run deploy-wiki
-```
-__Important__: Wiki must be created on Github
+[Práctica en gh-pages](/estudiar-las-rutas-en-expressjs-victor-jesus-pamela).
