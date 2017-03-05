@@ -213,6 +213,135 @@
                                 <section class="normal markdown-section">
                                 
                                 <h1 id="router-api">Router API</h1>
+<p>Un objeto <code>router</code> es una instancia aislada de middleware y rutas. Puedes pensar que es como una &quot;mini-aplicaci&#xF3;n&quot;, capaz
+solo de realizar funciones de middleware y routing. Cada aplicaci&#xF3;n Express tiene una app router integrada.</p>
+<p>Un router se comporta como middleware en s&#xED; mismo, as&#xED; que puedes usarlo como un argumento a app.use() o como el argumento
+al m&#xE9;todo use() de otro router. </p>
+<p>El objeto express de m&#xE1;s alto nivel tiene un m&#xE9;todo Router() que crea un nuevo objeto router.</p>
+<p>Una vez has creado un objeto router, puedes a&#xF1;adirle middleware y rutas de m&#xE9;todos HTTP (como get, put, post, etc.) como a 
+una aplicaci&#xF3;n. Por ejemplo:</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">// invocado para cualquier petici&#xF3;n a este router</span>
+router.use(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  <span class="hljs-comment">// .. algo de l&#xF3;gica aqu&#xED; como en cualquier otro middleware.</span>
+  next();
+});
+
+<span class="hljs-comment">// se encargar&#xE1; de cualquier petici&#xF3;n que termine en /events</span>
+<span class="hljs-comment">// depende de donde se llame al &quot;use()&quot; del router.</span>
+router.get(<span class="hljs-string">&apos;/events&apos;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  <span class="hljs-comment">// ..</span>
+});
+</code></pre>
+<p>Puedes usar entonces el router para una ra&#xED;z URL particular de esta manera separando tus rutas en ficheros o mini-apps.</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">// solo peticiones a /calendar/* ser&#xE1;n enviadas a nuestro &quot;router&quot;</span>
+app.use(<span class="hljs-string">&apos;/calendar&apos;</span>, router);
+</code></pre>
+<h2 id="m&#xE9;todos">M&#xE9;todos</h2>
+<h3 id="routerallpath-callback--callback">router.all(path, [callback, ...] callback)</h3>
+<p>Este m&#xE9;todo es igual a los m&#xE9;todos router.METHOD(), excepto que encaja con cualquier m&#xE9;todo HTTP (verbos).</p>
+<p>Este m&#xE9;todo es muy &#xFA;til para mapear l&#xF3;gica &quot;global&quot; para prefijos de caminos espec&#xED;ficos o emparejamientos arbitrarios.
+Por ejemplo, si has colocado la siguiente ruta al principio de todas las dem&#xE1;s definiciones de rutas, requerir&#xED;a que todas las
+rutas desde ese momento requiriesen autenticaci&#xF3;n y que se cargara autom&#xE9;ticamente un usuario. </p>
+<pre><code class="lang-javascript">router.all(<span class="hljs-string">&apos;*&apos;</span>, requireAuthentication, loadUser);
+</code></pre>
+<p>O el equivalente:</p>
+<pre><code class="lang-javascript">router.all(<span class="hljs-string">&apos;*&apos;</span>, requireAuthentication)
+router.all(<span class="hljs-string">&apos;*&apos;</span>, loadUser);
+</code></pre>
+<h3 id="routermethodpath-callback--callback">router.METHOD(path, [callback, ...] callback)</h3>
+<p>Los m&#xE9;todos router.METHOD proveen la funcionalidad de routing en Express, donde METHOD es uno de los m&#xE9;todo HTTP,, como
+GET, PUT, POST, etc, en min&#xFA;scula.</p>
+<p>El siguiente trozo de c&#xF3;digo ilustra la definici&#xF3;n m&#xE1;s simple de ruta. Express traduce los strings de camino a expresiones
+regulares, usadas internamente para emparejar peticiones. Los strings de consultas no se consideran al realizar esos emparejamientos,
+por ejemplo &quot;GET /&quot; emparejar&#xED;a con la siguiente ruta, al igual que &quot;GET /?name=tobi&quot;.</p>
+<pre><code class="lang-javascript">router.get(<span class="hljs-string">&apos;/&apos;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>)</span>{
+  res.send(<span class="hljs-string">&apos;hello world&apos;</span>);
+});
+</code></pre>
+<p>Tambi&#xE9;n puedes usar expresiones regulares-&#xFA;tiles si tienes restricciones muy espec&#xED;ficas, por ejemplo, lo siguiente emparejar&#xED;a
+&quot;GET /commits/71dbb9c&quot; al igual que &#x201C;GET /commits/71dbb9c..4c084f9&#x201D;.</p>
+<pre><code class="lang-javascript">router.get(<span class="hljs-regexp">/^\/commits\/(\w+)(?:\.\.(\w+))?$/</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>)</span>{
+  <span class="hljs-keyword">var</span> <span class="hljs-keyword">from</span> = req.params[<span class="hljs-number">0</span>];
+  <span class="hljs-keyword">var</span> to = req.params[<span class="hljs-number">1</span>] || <span class="hljs-string">&apos;HEAD&apos;</span>;
+  res.send(<span class="hljs-string">&apos;commit range &apos;</span> + <span class="hljs-keyword">from</span> + <span class="hljs-string">&apos;..&apos;</span> + to);
+});
+</code></pre>
+<h3 id="routerparamname-callback">router.param(name, callback)</h3>
+<p>A&#xF1;ade disparadores de callbacks a los par&#xE1;metros de rutas, donde <code>name</code> es el nombre del par&#xE1;metro y <code>callback</code> es la funci&#xF3;n
+de callback.</p>
+<p>Por ejemplo, cuando <code>:user</code> esta presente en una ruta, puedes mapear l&#xF3;gica de carga de usuario para proveer autim&#xE1;ticamente con
+req.user a la ruta, o realizar validaciones en la input del par&#xE1;metro.</p>
+<pre><code class="lang-javascript">router.param(<span class="hljs-string">&apos;user&apos;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next, id</span>) </span>{
+
+  <span class="hljs-comment">// try to get the user details from the User model and attach it to the request object</span>
+  User.find(id, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, user</span>) </span>{
+    <span class="hljs-keyword">if</span> (err) {
+      next(err);
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (user) {
+      req.user = user;
+      next();
+    } <span class="hljs-keyword">else</span> {
+      next(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;failed to load user&apos;</span>));
+    }
+  });
+});
+</code></pre>
+<h3 id="routerroutepath">router.route(path)</h3>
+<p>Devuelve una instancia de una sola ruta que puedes usar para encargarte de verbos HTTP con middleware opcional. Usa 
+router.route() para evitar nombres duplicados de rutas y por lo tanto errores.</p>
+<p>El siguiente c&#xF3;digo muestra c&#xF3;mo usar router.route() para especificar varios handlers de m&#xE9;todos HTTP.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> router = express.Router();
+
+router.param(<span class="hljs-string">&apos;user_id&apos;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next, id</span>) </span>{
+  req.user = {
+    id: id,
+    name: <span class="hljs-string">&apos;TJ&apos;</span>
+  };
+  next();
+});
+
+router.route(<span class="hljs-string">&apos;/users/:user_id&apos;</span>)
+.all(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  next();
+})
+.get(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  res.json(req.user);
+})
+.put(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  req.user.name = req.params.name;
+  res.json(req.user);
+})
+.post(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  next(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;not implemented&apos;</span>));
+})
+.delete(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  next(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;not implemented&apos;</span>));
+});
+</code></pre>
+<h3 id="routerusepath-function--function">router.use([path], [function, ...] function)</h3>
+<p>Usa el la funci&#xF3;n o funciones middleware especificadas, con una ruta opcional de montaje, que por defecto es &quot;/&quot;.</p>
+<p>Este m&#xE9;todo es similar a app.use(). Ejemplo:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;express&apos;</span>);
+<span class="hljs-keyword">var</span> app = express();
+<span class="hljs-keyword">var</span> router = express.Router();
+
+router.use(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&apos;%s %s %s&apos;</span>, req.method, req.url, req.path);
+  next();
+});
+
+router.use(<span class="hljs-string">&apos;/bar&apos;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  next();
+});
+
+router.use(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res, next</span>) </span>{
+  res.send(<span class="hljs-string">&apos;Hello World&apos;</span>);
+});
+
+app.use(<span class="hljs-string">&apos;/foo&apos;</span>, router);
+
+app.listen(<span class="hljs-number">3000</span>);
+</code></pre>
 
                                 
                                 </section>
@@ -256,7 +385,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Router API","level":"1.5","depth":1,"next":{"title":"Links","level":"1.6","depth":1,"path":"links.md","ref":"links.md","articles":[]},"previous":{"title":"Middleware","level":"1.4","depth":1,"path":"chapter3.md","ref":"chapter3.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"chapter4.md","mtime":"2017-02-28T16:23:33.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-03-04T18:31:38.354Z"},"basePath":".","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Router API","level":"1.5","depth":1,"next":{"title":"Links","level":"1.6","depth":1,"path":"links.md","ref":"links.md","articles":[]},"previous":{"title":"Middleware","level":"1.4","depth":1,"path":"chapter3.md","ref":"chapter3.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"chapter4.md","mtime":"2017-03-05T14:15:46.776Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-03-05T14:17:01.515Z"},"basePath":".","book":{"language":""}});
         });
     </script>
 </div>
