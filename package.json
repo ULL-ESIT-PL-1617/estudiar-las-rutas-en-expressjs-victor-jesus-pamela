@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "generate-gitbook": "node ./scripts/generate-gitbook.js",
+    "start": "node servidor.js",
     "generate-wiki": "./scripts/losh generate-wiki",
     "build": "npm install && npm i gitbook-cli && npm run generate-gitbook && npm run generate-wiki",
     "deploy-gitbook": "./scripts/losh deploy-gitbook",
