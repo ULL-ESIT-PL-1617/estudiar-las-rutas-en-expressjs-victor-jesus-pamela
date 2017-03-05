@@ -30,3 +30,16 @@ gulp.task('ejemploAPI', function() {
       }
     });
 });
+
+gulp.task('ejemploExpress', function() {
+  var exec = require('child_process').exec;
+    var child;
+    child = exec("node ejemploExpress.js", 
+                function (error, stdout, stderr) {
+      console.log('stdout: ' + stdout);
+      console.log('stderr: ' + stderr);
+      if (error !== null) {
+        console.log('exec error: ' + error);
+      }
+    });
+});
